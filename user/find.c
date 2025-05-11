@@ -1,8 +1,8 @@
 #include "kernel/types.h"
-#include "kernel/stat.h"
+#include "kernel/fcntl.h"
 #include "user/user.h"
 #include "kernel/fs.h"
-#include "kernel/fcntl.h"
+#include "kernel/stat.h"
 
 char*
 fmtname(char *path)
@@ -61,31 +61,32 @@ ls(char *path)
         continue;
       memmove(p, de.name, DIRSIZ);
       p[DIRSIZ] = 0;
-      if(!strcmp(buf,"./") && !strcmp(buf,"./.."))
-      ls(buf);
-      // fprintf(1,"%s",buf);
-      // if(stat(buf, &st) < 0){
-      //   printf("ls: cannot stat %s\n", buf);
-      //   continue;
-      // }
-      // fprintf(1,"%s",buf);
-      // printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, (int) st.size);
+      if(stat(buf, &st) < 0){
+        printf("ls: cannot stat %s\n", buf);
+        continue;
+      }
+      printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, (int) st.size);
+
+      if(strcmp(buf,"./.") && strcmp(buf,"./..")){
+        char *z;
+        z=buf;
+        printf("%s",buf);
+        ls(z);
+      }
     }
     break;
   }
   close(fd);
 }
 
-int
-main(int argc, char *argv[])
-{
-  int i;
 
-  if(argc < 2){
-    ls(".");
-    exit(0);
-  }
-  for(i=1; i<argc; i++)
-    ls(argv[i]);
-  exit(0);
+int main(int argc, char *argv[]){
+    if(argc < 2){
+        fprintf(2,"usage: Find command [path, name]\n");
+        exit(1);
+      }
+    
+    
+        ls(argv[1]);
+      exit(0);
 }
