@@ -9,22 +9,20 @@ fmtname(char *path)
 {
   static char buf[DIRSIZ+1];
   char *p;
-
   // Find first character after last slash.
-
   for(p=path+strlen(path); p >= path && *p != '/'; p--);
   p++;
 
   // Return blank-padded name.
   if(strlen(p) >= DIRSIZ)
-    return p;
+  return p;
   memmove(buf, p, strlen(p));
   memset(buf+strlen(p), ' ', DIRSIZ-strlen(p));
   return buf;
 }
 
 void
-ls(char *path)
+find(char *path,char *pattern)
 {
   char buf[512], *p;
   int fd;
@@ -45,7 +43,9 @@ ls(char *path)
   switch(st.type){
   case T_DEVICE:
   case T_FILE:
-    printf("%s %d %d %d\n", fmtname(path), st.type, st.ino, (int) st.size);
+   if(!memcmp(fmtname(path),pattern,strlen(pattern))){
+    printf("%s\n", path);
+   }
     break;
 
   case T_DIR:
@@ -60,19 +60,18 @@ ls(char *path)
       if(de.inum == 0)
         continue;
       memmove(p, de.name, DIRSIZ);
+
       p[DIRSIZ] = 0;
+      
+      if(strcmp(de.name,".") && strcmp(de.name,"..")){
+        char *z;
+        z=buf;
+        find(z,pattern);
+      }
       if(stat(buf, &st) < 0){
         printf("ls: cannot stat %s\n", buf);
         continue;
-      }
-      printf("%s %d %d %d\n", fmtname(buf), st.type, st.ino, (int) st.size);
-
-      if(strcmp(buf,"./.") && strcmp(buf,"./..")){
-        char *z;
-        z=buf;
-        printf("%s",buf);
-        ls(z);
-      }
+      }   
     }
     break;
   }
@@ -85,8 +84,7 @@ int main(int argc, char *argv[]){
         fprintf(2,"usage: Find command [path, name]\n");
         exit(1);
       }
-    
-    
-        ls(argv[1]);
+      printf("%s\n",argv[2]);
+      find(argv[1],argv[2]);
       exit(0);
 }
