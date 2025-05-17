@@ -256,7 +256,6 @@ uvmalloc(pagetable_t pagetable, uint64 oldsz, uint64 newsz, int xperm)
   char *mem;
   uint64 a;
   int sz;
-
   if(newsz < oldsz)
     return oldsz;
 
@@ -264,6 +263,7 @@ uvmalloc(pagetable_t pagetable, uint64 oldsz, uint64 newsz, int xperm)
   for(a = oldsz; a < newsz; a += sz){
     sz = PGSIZE;
     mem = kalloc();
+    // printf("this is the memmory output %s\n",*mem);
     if(mem == 0){
       uvmdealloc(pagetable, a, oldsz);
       return 0;

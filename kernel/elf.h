@@ -4,15 +4,15 @@
 
 // File header
 struct elfhdr {
-  uint magic;  // must equal ELF_MAGIC
-  uchar elf[12];
+  uint   magic;  // must equal ELF_MAGIC
+  uchar  elf[12];
   ushort type;
   ushort machine;
-  uint version;
+  uint   version;
   uint64 entry;
   uint64 phoff;
   uint64 shoff;
-  uint flags;
+  uint   flags;
   ushort ehsize;
   ushort phentsize;
   ushort phnum;

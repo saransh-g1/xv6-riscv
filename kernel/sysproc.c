@@ -40,11 +40,14 @@ sys_sbrk(void)
 {
   uint64 addr;
   int n;
-
   argint(0, &n);
   addr = myproc()->sz;
+  // printf("this is the sbrk n %d",n);
+
   if(growproc(n) < 0)
     return -1;
+
+
   return addr;
 }
 
@@ -85,9 +88,19 @@ uint64
 sys_uptime(void)
 {
   uint xticks;
-
   acquire(&tickslock);
   xticks = ticks;
   release(&tickslock);
   return xticks;
+}
+
+
+uint64
+sys_trace(void)
+{
+  int n;
+  argint(0, &n);
+  printf("[kernel] pid %d set tracemask = 0x%d\n", myproc()->pid, n);
+  myproc()->mask = n;
+  return n;
 }
